@@ -1,0 +1,18 @@
+<h2>All Songs</h2>
+<a href="{% url 'song_upload' %}">Upload Song</a>
+<ul>
+  {% for song in songs %}
+    <li>
+      <img src="{{ song.image.url }}" width="50">
+      {{ song.name }} - {{ song.singers }}
+      <audio controls>
+        <source src="{{ song.audio.url }}" type="audio/mpeg">
+      </audio>
+      <a href="{% url 'song_edit' song.id %}">Edit</a>
+      <form method="post" action="{% url 'song_delete' song.id %}">
+        {% csrf_token %}
+        <button type="submit">Delete</button>
+      </form>
+    </li>
+  {% endfor %}
+</ul>

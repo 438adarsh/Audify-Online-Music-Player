@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-4">
+    <h2>Pending Upload Requests</h2>
+
+    {% if pending_profiles %}
+        <table class="table table-bordered mt-3">
+            <thead>
+                <tr>
+                    <th>User</th>
+                    <th>Email</th>
+                    <th>Requested At</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for profile in pending_profiles %}
+                    <tr>
+                        <td>{{ profile.user.username }}</td>
+                        <td>{{ profile.user.email }}</td>
+                        <td>{{ profile.updated_at|default:profile.user.date_joined }}</td>
+                        <td>
+                            <form method="post" action="{% url 'accounts:approve_request' profile.id %}" style="display:inline;">
+                                {% csrf_token %}
+                                <button class="btn btn-success btn-sm">Approve</button>
+                            </form>
+                            <form method="post" action="{% url 'accounts:deny_request' profile.id %}" style="display:inline;">
+                                {% csrf_token %}
+                                <button class="btn btn-danger btn-sm">Reject</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No pending requests 🎉</p>
+    {% endif %}
+</div>
+{% endblock %}

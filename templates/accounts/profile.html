@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container py-4">
+  <h3>Profile</h3>
+  <p><strong>User:</strong> {{ request.user.username }} ({{ request.user.email }})</p>
+  <p>
+    <strong>Upload access:</strong>
+    {% if profile.can_upload %}
+      <span class="badge bg-success">Granted</span>
+    {% elif profile.requested_upload %}
+      <span class="badge bg-warning text-dark">Pending</span>
+    {% else %}
+      <span class="badge bg-secondary">Not granted</span>
+    {% endif %}
+  </p>
+
+  {% if not profile.can_upload and not profile.requested_upload %}
+    <a href="{% url 'accounts:request_upload_access' %}" class="btn btn-dark">Request upload access</a>
+  {% endif %}
+
+  {% if profile.can_upload %}
+    <!-- Add new song button -->
+    <div class="mt-4">
+      <button class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#songModal">+ Add New Song</button>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="songModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content bg-dark text-white">
+          <div class="modal-header border-0">
+            <h5 class="modal-title">Song Form</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <div id="songFormContainer" class="text-center">
+              <div class="spinner-border text-light"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Uploaded songs list -->
+<!-- Uploaded songs list -->
+<div class="mt-4">
+    <h4>Your Songs</h4>
+    <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-6 g-3">
+      {% for song in user_songs %}
+        <div class="col">
+          <div class="card h-100 shadow-sm border-0 bg-dark text-white" style="cursor:pointer"
+               onclick="openPlayer('{{ song.id }}', '{{ song.name|escapejs }}', '{{ song.audio.url }}', '{{ song.image.url }}')">
+            <img src="{{ song.image.url }}" class="card-img-top" alt="{{ song.name }}" style="aspect-ratio:1/1; object-fit:cover;">
+            <div class="card-body p-2">
+              <div class="fw-semibold small text-truncate">{{ song.name }}</div>
+              <div class="text-muted small">{{ song.get_genre_display }} • {{ song.get_language_display }}</div>
+            </div>
+          </div>
+          <!-- Edit & Delete buttons -->
+          <div class="d-flex justify-content-between mt-2">
+            <button class="btn btn-sm btn-outline-light"
+                    data-bs-toggle="modal"
+                    data-bs-target="#songModal"
+                    data-url="{% url 'songs:song_update' song.pk %}">
+              Edit
+            </button>
+            <form method="post" action="{% url 'songs:song_delete' song.pk %}" onsubmit="return confirm('Delete this song?');">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+            </form>
+          </div>
+        </div>
+      {% empty %}
+        <p class="text-muted">You haven’t uploaded any songs yet.</p>
+      {% endfor %}
+    </div>
+  </div>  
+  {% endif %}
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+  const songModal = document.getElementById("songModal");
+  const formContainer = document.getElementById("songFormContainer");
+
+  songModal.addEventListener("show.bs.modal", function(event) {
+    const button = event.relatedTarget;
+    const url = button.getAttribute("data-url") || "{% url 'songs:song_create' %}";
+
+    fetch(url, { headers: {"X-Requested-With": "XMLHttpRequest"} })
+      .then(res => res.text())
+      .then(data => {
+        formContainer.innerHTML = data;
+        hookFormSubmit(url);
+      })
+      .catch(err => formContainer.innerHTML = "<p class='text-danger'>Error loading form</p>");
+  });
+
+  function hookFormSubmit(url) {
+    const form = formContainer.querySelector("form");
+    if (!form) return;
+
+    form.addEventListener("submit", function(e) {
+      e.preventDefault();
+      const formData = new FormData(form);
+
+      fetch(url, {
+        method: "POST",
+        body: formData,
+        headers: {"X-Requested-With": "XMLHttpRequest"}
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          location.reload();
+        } else {
+          formContainer.innerHTML = data.html;
+          hookFormSubmit(url);
+        }
+      });
+    });
+  }
+});
+
+    </script>
+
+{% if request.user.is_superuser or request.user.email == "pandeypankaj3030@gmail.com" %}
+  <div class="mt-5 col-md-8 mx-auto">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h4 class="card-title mb-3">Pending Upload Requests</h4>
+        {% if pending_profiles %}
+          <ul class="list-group list-group-flush">
+            {% for prof in pending_profiles %}
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                {{ prof.user.username }} ({{ prof.user.email }})
+                <span>
+                  <a href="{% url 'accounts:approve_request' prof.id %}" class="btn btn-success btn-sm">Approve</a>
+                  <a href="{% url 'accounts:deny_request' prof.id %}" class="btn btn-danger btn-sm">Deny</a>
+                </span>
+              </li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <p class="text-muted mb-0">No pending requests.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+{% endif %}
+{% endblock %}

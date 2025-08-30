@@ -1,0 +1,50 @@
+<form method="post" enctype="multipart/form-data" id="songForm">
+    {% csrf_token %}
+    <div class="mb-3">
+      <label class="form-label">Name</label>
+      {{ form.name }}
+    </div>
+  
+    <div class="mb-3">
+        <label class="form-label">Genres</label>
+        {{ form.genre }}
+        <div class="form-text">Hold Ctrl/Cmd to select multiple</div>
+    </div>
+  
+    <div class="mb-3">
+      <label class="form-label">Language</label>
+      {{ form.language }}
+    </div>
+  
+    <div class="mb-3">
+        <label class="form-label">Artists</label>
+        {{ form.artists }}
+        <div class="form-text">Hold Ctrl/Cmd to select multiple</div>
+    </div>
+      
+    <div class="mb-3">
+        <label class="form-label">Add New Artist</label>
+        {{ form.new_artist }}
+    </div>
+  
+    <div class="mb-3">
+      <label class="form-label">Image</label>
+      {{ form.image }}
+    </div>
+  
+    <div class="mb-3">
+      <label class="form-label">Description</label>
+      {{ form.description }}
+    </div>
+  
+    <div class="mb-3">
+      <label class="form-label">Audio</label>
+      {{ form.audio }}
+    </div>
+  
+    <div class="d-flex justify-content-end">
+      <button type="submit" class="btn btn-success">Save</button>
+      <button type="button" class="btn btn-secondary ms-2" data-bs-dismiss="modal">Cancel</button>
+    </div>
+  </form>
+  
