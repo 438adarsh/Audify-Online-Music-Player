@@ -47,7 +47,7 @@ It allows users to upload, manage, and listen to songs while giving admins the a
 
 1. Clone the repository:  
    ```bash
-   git clone https://github.com/1Manisha1/musicplayer.git
+   git clone https://github.com/438adarsh/musicplayer.git
 
 2. Navigate to Project folder:
    ```bash
