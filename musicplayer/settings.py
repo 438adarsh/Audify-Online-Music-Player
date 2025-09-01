@@ -25,7 +25,20 @@ SECRET_KEY = 'django-insecure-c0(e^6hx)+p%xy7k75!2u$2kis8z34ev=dqtp&*7w1w7q(odx=
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['musicplayer-72yq.onrender.com']
+# ALLOWED_HOSTS = ['musicplayer-72yq.onrender.com']
+
+ALLOWED_HOSTS = [
+    "audify-online-music-player.onrender.com",
+    "musicplayer-72yq.onrender.com",
+    "localhost",
+    "127.0.0.1",
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://audify-online-music-player.onrender.com",
+]
+
+
 
 
 # Application definition
