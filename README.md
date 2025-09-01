@@ -5,15 +5,6 @@ It allows users to upload, manage, and listen to songs while giving admins the a
 
 > A simple, elegant way to enjoy and manage your music collection online.  
 
----
-
-## Live Demo
-
-- **Hosted URL:** [Audify on Render](https://musicplayer-72yq.onrender.com/accounts/login/)  
-- **GitHub Repository:** [https://github.com/1Manisha1/musicplayer](https://github.com/1Manisha1/musicplayer)
-
----
-
 ## Features
 
 - Add, edit, and delete songs.
